@@ -1,48 +1,63 @@
 program TDateTimeHelperTests;
 
 {$IFNDEF TESTINSIGHT}
-{$APPTYPE CONSOLE}
-{$ENDIF}{$STRONGLINKTYPES ON}
+  {$APPTYPE CONSOLE}
+{$ENDIF}
+{$STRONGLINKTYPES ON}
 uses
+  {$IFDEF EurekaLog}
+  EMemLeaks,
+  EResLeaks,
+  EDebugJCL,
+  EDebugExports,
+  EFixSafeCallException,
+  EMapWin32,
+  EAppVCL,
+  EDialogWinAPIEurekaLogDetailed,
+  EDialogWinAPIStepsToReproduce,
+  ExceptionLog7,
+  {$ENDIF EurekaLog}
   System.SysUtils,
+{$IFDEF TESTINSIGHT}
+  TestInsight.DUnitX,
+{$ELSE}
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
-  DUnitX.TestFramework,
-{$IFDEF VER240}
-  DUnitX.Init, // Workaround for Delphi XE3 Compiler Bug
-{$ENDIF}
+{$ENDIF }
   DateTimeHelper in '..\DateTimeHelper.pas',
   TDateTimeHelper.Tests in 'TDateTimeHelper.Tests.pas';
 
+{$IFNDEF TESTINSIGHT}
 var
-  Runner: ITestRunner;
-  Results: IRunResults;
-  Logger: ITestLogger;
-  NUnitLogger: ITestLogger;
+  runner: ITestRunner;
+  results: IRunResults;
+  logger: ITestLogger;
+  nunitLogger : ITestLogger;
+{$ENDIF}
 begin
+  ReportMemoryLeaksOnShutdown := True;
 {$IFDEF TESTINSIGHT}
   TestInsight.DUnitX.RunRegisteredTests;
-  Exit;
-{$ENDIF}
+{$ELSE}
   try
     //Check command line options, will exit if invalid
     TDUnitX.CheckCommandLine;
     //Create the test runner
-    Runner := TDUnitX.CreateRunner;
+    LRunner := TDUnitX.CreateRunner;
     //Tell the runner to use RTTI to find Fixtures
-    Runner.UseRTTI := True;
+    LRunner.UseRTTI := True;
     //tell the runner how we will log things
     //Log to the console window
-    Logger := TDUnitXConsoleLogger.Create(True);
-    Runner.AddLogger(Logger);
+    LLogger := TDUnitXConsoleLogger.Create(true);
+    LRunner.AddLogger(LLogger);
     //Generate an NUnit compatible XML File
-    NUnitLogger := TDUnitXXMLNUnitFileLogger.Create(TDUnitX.Options.XMLOutputFile);
-    Runner.AddLogger(NUnitLogger);
-    Runner.FailsOnNoAsserts := False; //When true, Assertions must be made during tests;
+    LNUnitLogger := TDUnitXXMLNUnitFileLogger.Create(TDUnitX.Options.XMLOutputFile);
+    LRunner.AddLogger(LNUnitLogger);
+    LRunner.FailsOnNoAsserts := False; //When true, Assertions must be made during tests;
 
     //Run tests
-    Results := Runner.Execute;
-    if not Results.AllPassed then
+    LResults := LRunner.Execute;
+    if not LResults.AllPassed then
       System.ExitCode := EXIT_ERRORS;
 
     {$IFNDEF CI}
@@ -57,4 +72,8 @@ begin
     on E: Exception do
       System.Writeln(E.ClassName, ': ', E.Message);
   end;
+{$ENDIF}
+
 end.
+
+
