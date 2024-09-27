@@ -62,6 +62,10 @@ type
     procedure DateTime_TotalSecounds;
     [Test]
     procedure DateTime_UnixTime;
+    [Test]
+    procedure AsDoubleSet;
+    [Test]
+    procedure AsDoubleGet;
   end;
 
 implementation
@@ -247,6 +251,21 @@ begin
   Expected:= DateTimeToUnix(FExpected);
   Actual := FActual.UnixTime;
   Assert.AreEqual(Expected, Actual);
+end;
+
+procedure TDateTimeHelperTestObject.AsDoubleSet;
+begin
+  var Expected: Double :=  FExpected;
+  var Actual := FActual.AsDouble;
+  Assert.AreEqual(Expected, Double(Actual));
+end;
+
+procedure TDateTimeHelperTestObject.AsDoubleGet;
+begin
+  var Expected: Double := FExpected;
+  var Actual: TDateTime;
+  Actual.AsDouble(FActual);
+  Assert.AreEqual(Expected, FActual);
 end;
 
 initialization
