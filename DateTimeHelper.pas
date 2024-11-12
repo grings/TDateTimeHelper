@@ -198,37 +198,37 @@ begin
     Result := StrToDateTime(Date)
   else
   begin
-    var fs :=  TFormatSettings.Create(SysLocale.DefaultLCID);
+    var FormatSetting :=  TFormatSettings.Create(SysLocale.DefaultLCID);
 
     if DateSeparator <> #0 then
-      fs.DateSeparator := DateSeparator;
+      FormatSetting.DateSeparator := DateSeparator;
 
     if not Formats[0].Trim.IsEmpty then
-      fs.ShortDateFormat := Formats[0];
+      FormatSetting.ShortDateFormat := Formats[0];
 
     if LengthFormats > 1 then
     begin
       if TimeSeparator <> #0 then
-        fs.TimeSeparator := TimeSeparator;
+        FormatSetting.TimeSeparator := TimeSeparator;
 
       if not Formats[1].Trim.IsEmpty then
-        fs.ShortTimeFormat := Formats[1];
+        FormatSetting.ShortTimeFormat := Formats[1];
     end;
 
-    Result := StrToDateTime(Date, fs);
+    Result := StrToDateTime(Date, FormatSetting);
   end;
 end;
 
 class function TDateTimeHelper.ParseLocal(const Date: string; const Local: string = ''): TDateTime;
 begin
-  var fs: TFormatSettings;
+  var FormatSetting: TFormatSettings;
 
   if Local.Trim.IsEmpty then
-    fs := TFormatSettings.Create(SysLocale.DefaultLCID)
+    FormatSetting := TFormatSettings.Create(SysLocale.DefaultLCID)
   else
-    fs := TFormatSettings.Create(Local);
+    FormatSetting := TFormatSettings.Create(Local);
 
-  Result := StrToDateTime(Date, fs);
+  Result := StrToDateTime(Date, FormatSetting);
 end;
 
 function TDateTimeHelper.AddDays(const NumberOfDays: Int32 = 1): TDateTime;
